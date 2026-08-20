@@ -3,6 +3,7 @@ require("dotenv").config({ quiet: true });
 const Fastify = require("fastify");
 const fs = require("fs-extra");
 const path = require("path");
+if (process.env.DATA_DIR) require("dotenv").config({ quiet: true, override: true, path: path.join(process.env.DATA_DIR, ".env") });
 const {
   PROJECT_DIR,
   ensureDataDir,
@@ -418,7 +419,7 @@ let wakeUpLastHeartbeat = null;
 // ========================
 const PRESETS_FILE = runtimeFile("presets.json");
 // .env 是启动配置而不是运行数据；继续固定在代码目录，Railway 则始终以 Variables 为权威来源。
-const ENV_FILE = path.join(PROJECT_DIR, ".env");
+const ENV_FILE = path.join(DATA_DIR, ".env");
 const PREFERRED_ENV_ORDER = [
   "TARGET_API_URL",
   "TARGET_API_KEY",
@@ -1722,14 +1723,7 @@ app.post("/admin/restart", { preHandler: basicAuth }, async (req, reply) => {
   reply.send({ success: true, output: `重启指令已发送：${restartCommand}` });
   
   // 稍后重启。默认只重启本项目的两个进程；可通过 RESTART_COMMAND 自定义。
-  const { exec } = require("child_process");
-  exec(restartCommand, (err, stdout, stderr) => {
-    if (err) {
-      console.error("重启失败:", stderr);
-    } else {
-      console.log("服务已重启:", stdout);
-    }
-  });
+  setTimeout(()=>process.exit(0),800).unref();
 });
 
 // ========================
