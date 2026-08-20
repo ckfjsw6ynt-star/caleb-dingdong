@@ -1,6 +1,7 @@
 require("dotenv").config({ quiet: true });
 const fs = require("fs");
 const path = require("path");
+if (process.env.DATA_DIR) require("dotenv").config({ quiet: true, override: true, path: path.join(process.env.DATA_DIR, ".env") });
 const { buildNtfyPayload } = require("./ntfy_priority");
 const { ensureDataDir, runtimeDirectory, runtimeFile } = require("./runtime_paths");
 const { parseChatCompletionResponse } = require("./upstream_response");
